@@ -1,0 +1,10 @@
+module: MaterialMotionObservable
+module_version: 1.0.0
+sdk: iphonesimulator
+xcodebuild_arguments:
+  - -workspace
+  - MaterialMotionObservable.xcworkspace
+  - -scheme
+  - MaterialMotionObservable
+github_url: https://github.com/material-motion/observable-swift
+github_file_prefix: https://github.com/material-motion/observable-swift/tree/v1.0.0
