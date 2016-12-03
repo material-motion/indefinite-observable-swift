@@ -16,14 +16,14 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "examples" do |ss|
-    ss.source_files = "examples/*.{swift}", "examples/supplemental/*.{swift}"
-    ss.exclude_files = "examples/TableOfContents.swift"
-    ss.resources = "examples/supplemental/*.{xcassets}"
+    ss.ios.source_files = "examples/*.{swift}", "examples/supplemental/*.{swift}"
+    ss.ios.exclude_files = "examples/TableOfContents.swift"
+    #ss.resources = "examples/supplemental/*.{xcassets}"
     ss.dependency "IndefiniteObservable/lib"
   end
 
-  s.subspec "tests" do |ss|
-    ss.source_files = "tests/src/*.{swift}", "tests/src/private/*.{swift}"
-    ss.dependency "IndefiniteObservable/lib"
-  end
+  #s.subspec "tests" do |ss|
+  #  ss.source_files = "tests/src/*.{swift}", "tests/src/private/*.{swift}"
+  #  ss.dependency "IndefiniteObservable/lib"
+  #end
 end
