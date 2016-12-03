@@ -9,7 +9,7 @@ end
 
 abstract_target 'Tests' do
   project 'examples/apps/Catalog/Catalog.xcodeproj'
-  pod 'IndefiniteObservable/tests', :path => './'
+  pod 'IndefiniteObservable/lib', :path => './'
 
   target "UnitTests"
   target "OSXTests"

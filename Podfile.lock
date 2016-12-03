@@ -3,13 +3,11 @@ PODS:
   - IndefiniteObservable/examples (1.0.0):
     - IndefiniteObservable/lib
   - IndefiniteObservable/lib (1.0.0)
-  - IndefiniteObservable/tests (1.0.0):
-    - IndefiniteObservable/lib
 
 DEPENDENCIES:
   - CatalogByConvention
   - IndefiniteObservable/examples (from `./`)
-  - IndefiniteObservable/tests (from `./`)
+  - IndefiniteObservable/lib (from `./`)
 
 EXTERNAL SOURCES:
   IndefiniteObservable:
@@ -17,8 +15,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   CatalogByConvention: be55c2263132e4f9f59299ac8a528ee8715b3275
-  IndefiniteObservable: 3efc90f559fea4010f8be8a9ab4f33ffa6718a44
+  IndefiniteObservable: b90809f2fa025e37124c14681192bc441b128625
 
-PODFILE CHECKSUM: d381ba7e64de99c14e9c80a75f594f468c07327d
+PODFILE CHECKSUM: 3e4cdba95901e07a289159f0c5a8b830ecb1a5c8
 
 COCOAPODS: 1.1.1
