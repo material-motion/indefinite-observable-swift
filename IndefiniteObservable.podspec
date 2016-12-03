@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "IndefiniteObservable"
-  s.summary      = "IndefiniteObservable.swift"
+  s.summary      = "IndefiniteObservable is a minimal implementation of Observable with no concept of completion or failure."
   s.version      = "1.0.0"
   s.authors      = "The Material Motion Authors"
   s.license      = "Apache 2.0"
