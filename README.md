@@ -148,7 +148,7 @@ let pan = UIPanGestureRecognizer()
 view.addGestureRecognizer(pan)
 
 let dragStream = IndefiniteObservable<DragProducer.Value> { observer in
-  return DragProducer(subscribedTo: pan, observer: observer).subscription
+  return DragProducer(subscribedTo: pan, observer: observer).unsubscribe
 }
 let subscription = dragStream.subscribe {
   dump($0.state)
@@ -233,7 +233,7 @@ It often is helpful to provide the observer with the current state on registrati
 
 ```swift
 let dragStream = IndefiniteObservable<DragProducer.Value> { observer in
-  return DragProducer(subscribedTo: pan, observer: observer).subscription
+  return DragProducer(subscribedTo: pan, observer: observer).unsubscribe
 }
 let subscription = dragStream.subscribe {
   dump($0)
