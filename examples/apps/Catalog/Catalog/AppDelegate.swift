@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     self.window = window
 
     let rootViewController = CBCNodeListViewController(node: CBCCreateNavigationTree())
-    rootViewController.title = "Swift Observable"
+    rootViewController.title = "IndefiniteObservable.swift"
     window.rootViewController = UINavigationController(rootViewController: rootViewController)
 
     window.makeKeyAndVisible()
