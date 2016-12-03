@@ -14,17 +14,27 @@
  limitations under the License.
  */
 
-// MARK: Catalog by convention
+import Foundation
 import IndefiniteObservable
 
-extension DelegateObservableExampleViewController {
-  class func catalogBreadcrumbs() -> [String] {
-    return ["How to observe a delegate"]
-  }
-}
+// Simple operators used by the tests.
 
-extension OperatorExampleViewController {
-  class func catalogBreadcrumbs() -> [String] {
-    return ["How to create an operator"]
+extension IndefiniteObservable {
+  public func map<U>(_ transform: @escaping (T) -> U) -> IndefiniteObservable<U> {
+    return IndefiniteObservable<U> { observer in
+      return self.subscribe {
+        observer.next(transform($0))
+      }.unsubscribe
+    }
+  }
+
+  public func filter(_ isIncluded: @escaping (T) -> Bool) -> IndefiniteObservable<T> {
+    return IndefiniteObservable<T> { observer in
+      return self.subscribe {
+        if isIncluded($0) {
+          observer.next($0)
+        }
+      }.unsubscribe
+    }
   }
 }

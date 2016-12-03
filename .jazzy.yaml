@@ -1,10 +1,10 @@
-module: MaterialMotionObservable
+module: IndefiniteObservable
 module_version: 1.0.0
 sdk: iphonesimulator
 xcodebuild_arguments:
   - -workspace
-  - MaterialMotionObservable.xcworkspace
+  - IndefiniteObservable.xcworkspace
   - -scheme
-  - MaterialMotionObservable
-github_url: https://github.com/material-motion/observable-swift
-github_file_prefix: https://github.com/material-motion/observable-swift/tree/v1.0.0
+  - IndefiniteObservable
+github_url: https://github.com/material-motion/indefinite-observable-swift
+github_file_prefix: https://github.com/material-motion/indefinite-observable-swift/tree/v1.0.0

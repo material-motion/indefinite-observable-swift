@@ -1,15 +1,18 @@
-workspace 'MaterialMotionObservable.xcworkspace'
+workspace 'IndefiniteObservable.xcworkspace'
 use_frameworks!
 
 target "Catalog" do
   pod 'CatalogByConvention'
-  pod 'MaterialMotionObservable/examples', :path => './'
+  pod 'IndefiniteObservable/examples', :path => './'
   project 'examples/apps/Catalog/Catalog.xcodeproj'
 end
 
-target "UnitTests" do
+abstract_target 'Tests' do
   project 'examples/apps/Catalog/Catalog.xcodeproj'
-  pod 'MaterialMotionObservable/tests', :path => './'
+  pod 'IndefiniteObservable/tests', :path => './'
+
+  target "UnitTests"
+  target "OSXTests"
 end
 
 post_install do |installer|
