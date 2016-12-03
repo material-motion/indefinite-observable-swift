@@ -41,7 +41,7 @@
          observer.next(callbackValue)
        }
 
-       return SimpleSubscription {
+       return {
          unregisterCallback(someToken)
        }
      }
