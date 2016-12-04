@@ -20,6 +20,8 @@ import IndefiniteObservable
 // Simple operators used by the tests.
 
 extension IndefiniteObservable {
+
+  // Map from one value type to another.
   public func map<U>(_ transform: @escaping (T) -> U) -> IndefiniteObservable<U> {
     return IndefiniteObservable<U> { observer in
       return self.subscribe {
@@ -28,10 +30,11 @@ extension IndefiniteObservable {
     }
   }
 
-  public func filter(_ isIncluded: @escaping (T) -> Bool) -> IndefiniteObservable<T> {
+  // Only emit values downstream for which passesTest returns true
+  public func filter(_ passesTest: @escaping (T) -> Bool) -> IndefiniteObservable<T> {
     return IndefiniteObservable<T> { observer in
       return self.subscribe {
-        if isIncluded($0) {
+        if passesTest($0) {
           observer.next($0)
         }
       }.unsubscribe

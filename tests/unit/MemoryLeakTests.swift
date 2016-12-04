@@ -63,9 +63,9 @@ class MemoryLeakTests: XCTestCase {
     weak var weakObservable = observable
 
     autoreleasepool {
-      let _ = observable!.subscribe(next: {
+      let _ = observable!.subscribe {
         let _ = $0
-      })
+      }
       // Remove our only strong reference.
       observable = nil
     }
@@ -85,9 +85,9 @@ class MemoryLeakTests: XCTestCase {
     autoreleasepool {
       let _ = observable!.map { value in
         return value * value
-        }.subscribe(next: {
+        }.subscribe {
           let _ = $0
-        })
+        }
       // Remove our only strong reference.
       observable = nil
     }
@@ -108,9 +108,9 @@ class MemoryLeakTests: XCTestCase {
 
       let subscription = observable!.map { value in
         return value * value
-        }.subscribe(next: {
+        }.subscribe {
           let _ = $0
-        })
+        }
       // Remove our only strong reference.
       subscription.unsubscribe()
     }

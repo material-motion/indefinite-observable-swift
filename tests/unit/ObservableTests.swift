@@ -38,6 +38,37 @@ class ObservableTests: XCTestCase {
     waitForExpectations(timeout: 0)
   }
 
+  func testUnsubscribesOnDeallocation() {
+    var didUnsubscribe = false
+
+    autoreleasepool {
+      let observable = IndefiniteObservable<CGFloat> { observer in
+        return {
+          didUnsubscribe = true
+        }
+      }
+
+      let _ = observable.subscribe { _ in }
+    }
+
+    XCTAssertTrue(didUnsubscribe)
+  }
+
+  func testUnsubscribesOnUnsubscribe() {
+    var didUnsubscribe = false
+
+    let observable = IndefiniteObservable<CGFloat> { observer in
+      return {
+        didUnsubscribe = true
+      }
+    }
+
+    let subscription = observable.subscribe { _ in }
+    subscription.unsubscribe()
+
+    XCTAssertTrue(didUnsubscribe)
+  }
+
   func testTwoSubsequentSubscriptions() {
     let value = 10
 
