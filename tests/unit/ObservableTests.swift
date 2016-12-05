@@ -142,11 +142,11 @@ class ObservableTests: XCTestCase {
   }
 
   class DeferredGenerator {
-    func addObserver(_ observer: AnyObserver<Int>) {
+    func addObserver(_ observer: ValueObserver<Int>) {
       observers.append(observer)
     }
 
-    func removeObserver(_ observer: AnyObserver<Int>) {
+    func removeObserver(_ observer: ValueObserver<Int>) {
       if let index = observers.index(where: { $0 === observer }) {
         observers.remove(at: index)
       }
@@ -157,7 +157,7 @@ class ObservableTests: XCTestCase {
         observer.next(value)
       }
     }
-    var observers: [AnyObserver<Int>] = []
+    var observers: [ValueObserver<Int>] = []
   }
 
   func testGeneratedValuesAreReceived() {

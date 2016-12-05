@@ -117,7 +117,7 @@ need to create a `Producer` class. A `Producer` listens for events with an event
 class DragProducer: Subscription {
   typealias Value = (state: UIGestureRecognizerState, location: CGPoint)
 
-  init(subscribedTo gesture: UIPanGestureRecognizer, observer: AnyObserver<Value>) {
+  init(subscribedTo gesture: UIPanGestureRecognizer, observer: ValueObserver<Value>) {
     self.gesture = gesture
     self.observer = observer
 
@@ -141,7 +141,7 @@ class DragProducer: Subscription {
   }
 
   var gesture: (UIPanGestureRecognizer)?
-  let observer: AnyObserver<Value>
+  let observer: ValueObserver<Value>
 }
 
 let pan = UIPanGestureRecognizer()
@@ -175,22 +175,22 @@ class DragProducer: Subscription {
 
 ### Step 3: Implement the initializer
 
-Your initializer must accept and store an `AnyObserver<Value>` instance.
+Your initializer must accept and store an `ValueObserver<Value>` instance.
 
 ```swift
-  init(subscribedTo gesture: UIPanGestureRecognizer, observer: AnyObserver<Value>) {
+  init(subscribedTo gesture: UIPanGestureRecognizer, observer: ValueObserver<Value>) {
     self.gesture = gesture
     self.observer = observer
   }
 
   var gesture: (UIPanGestureRecognizer)?
-  let observer: AnyObserver<Value>
+  let observer: ValueObserver<Value>
 ```
 
 ### Step 4: Connect to the event source and send values to the observer
 
 ```swift
-  init(subscribedTo gesture: UIPanGestureRecognizer, observer: AnyObserver<Value>) {
+  init(subscribedTo gesture: UIPanGestureRecognizer, observer: ValueObserver<Value>) {
     ...
 
     gesture.addTarget(self, action: #selector(didPan))
@@ -221,7 +221,7 @@ You are responsible for disconnecting from and releasing any resources here.
 It often is helpful to provide the observer with the current state on registration.
 
 ```swift
-  init(subscribedTo gesture: UIPanGestureRecognizer, observer: AnyObserver<Value>) {
+  init(subscribedTo gesture: UIPanGestureRecognizer, observer: ValueObserver<Value>) {
     ...
 
     // Populate the observer with the current gesture state.

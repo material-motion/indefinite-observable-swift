@@ -24,7 +24,7 @@ import IndefiniteObservable
 class DragProducer: Subscription {
   typealias Value = (state: UIGestureRecognizerState, location: CGPoint)
 
-  init(subscribedTo gesture: UIPanGestureRecognizer, observer: AnyObserver<Value>) {
+  init(subscribedTo gesture: UIPanGestureRecognizer, observer: ValueObserver<Value>) {
     self.gesture = gesture
     self.observer = observer
 
@@ -48,7 +48,7 @@ class DragProducer: Subscription {
   }
 
   var gesture: (UIPanGestureRecognizer)?
-  let observer: AnyObserver<Value>
+  let observer: ValueObserver<Value>
 }
 
 public class DelegateObservableExampleViewController: UIViewController {

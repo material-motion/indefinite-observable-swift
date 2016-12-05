@@ -47,7 +47,7 @@
      }
  */
 open class IndefiniteObservable<T> {
-  public typealias Subscriber<T> = (AnyObserver<T>) -> (() -> Void)?
+  public typealias Subscriber<T> = (ValueObserver<T>) -> (() -> Void)?
 
   /** A subscriber is only invoked when subscribe is invoked. */
   public init(_ subscriber: @escaping Subscriber<T>) {
@@ -66,10 +66,10 @@ open class IndefiniteObservable<T> {
    - Returns: A subscription.
    */
   public func subscribe(next: @escaping (T) -> Void) -> Subscription {
-    let observer = AnyObserver<T>(next)
+    let observer = ValueObserver<T>(next)
 
     // This line creates our "downstream" data flow.
-    let subscription = subscriber(AnyObserver { observer.next($0) })
+    let subscription = subscriber(ValueObserver { observer.next($0) })
 
     // We store a strong reference to self in the subscription in order to keep the stream alive.
     // When the subscription goes away, so does the stream.
@@ -109,8 +109,8 @@ public let noUnsubscription: (() -> Void)? = nil
 
 // MARK: Type erasing
 
-/** A type-erased observer. */
-public final class AnyObserver<T>: Observer {
+/** A generic value observer. */
+public final class ValueObserver<T>: Observer {
   public typealias Value = T
 
   init(_ next: @escaping (Value) -> Void) {
