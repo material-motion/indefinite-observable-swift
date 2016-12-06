@@ -46,7 +46,7 @@
        }
      }
  */
-open class IndefiniteObservable<T> {
+public final class IndefiniteObservable<T> {
   public typealias Subscriber<T> = (ValueObserver<T>) -> (() -> Void)?
 
   /** A subscriber is only invoked when subscribe is invoked. */
