@@ -81,12 +81,6 @@ open class IndefiniteObservable<T> {
   private let subscriber: Subscriber<T>
 }
 
-/** An Observer receives data from an IndefiniteObservable. */
-public protocol Observer {
-  associatedtype Value
-  func next(_ value: Value) -> Void
-}
-
 /** A Subscription is returned by IndefiniteObservable.subscribe. */
 public protocol Subscription {
   func unsubscribe()
@@ -109,8 +103,8 @@ public let noUnsubscription: (() -> Void)? = nil
 
 // MARK: Type erasing
 
-/** A generic value observer. */
-public final class ValueObserver<T>: Observer {
+/** An ValueObserver receives data from an IndefiniteObservable. */
+public final class ValueObserver<T> {
   public typealias Value = T
 
   init(_ next: @escaping (Value) -> Void) {
