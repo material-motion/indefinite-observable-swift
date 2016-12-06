@@ -67,20 +67,20 @@ public class DelegateObservableExampleViewController: UIViewController {
     let pan = UIPanGestureRecognizer()
     view.addGestureRecognizer(pan)
 
-    let dragStream = IndefiniteObservable<DragProducer.Value> { observer in
+    let dragStream = IndefiniteObservable { observer in
       return DragProducer(subscribedTo: pan, observer: observer).unsubscribe
     }
 
     // Must hold a reference to the subscription, otherwise the stream will be deallocated when the
     // subscription goes out of scope.
-    subscriptions.append(dragStream.subscribe {
+    subscriptions.append(dragStream.subscribe(observer: ValueObserver {
       if $0.state == .began || $0.state == .changed {
         targetView.layer.position = $0.location
       }
-    })
+    }))
 
-    subscriptions.append(dragStream.subscribe {
+    subscriptions.append(dragStream.subscribe(observer: ValueObserver {
       print($0.state.rawValue)
-    })
+    }))
   }
 }

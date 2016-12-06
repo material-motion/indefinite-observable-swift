@@ -46,11 +46,11 @@
        }
      }
  */
-public final class IndefiniteObservable<T> {
-  public typealias Subscriber<T> = (ValueObserver<T>) -> (() -> Void)?
+open class IndefiniteObservable<O> {
+  public typealias Subscriber<O> = (O) -> (() -> Void)?
 
   /** A subscriber is only invoked when subscribe is invoked. */
-  public init(_ subscriber: @escaping Subscriber<T>) {
+  public init(_ subscriber: @escaping Subscriber<O>) {
     self.subscriber = subscriber
   }
 
@@ -65,8 +65,7 @@ public final class IndefiniteObservable<T> {
    - Parameter next: A block that will be executed when new values are sent from upstream.
    - Returns: A subscription.
    */
-  public func subscribe(next: @escaping (T) -> Void) -> Subscription {
-    let observer = ValueObserver<T>(next)
+  public final func subscribe(observer: O) -> Subscription {
     if let subscription = subscriber(observer) {
       return SimpleSubscription(subscription)
     } else {
@@ -74,7 +73,7 @@ public final class IndefiniteObservable<T> {
     }
   }
 
-  private let subscriber: Subscriber<T>
+  private let subscriber: Subscriber<O>
 }
 
 /** A Subscription is returned by IndefiniteObservable.subscribe. */
@@ -96,19 +95,6 @@ public protocol Subscription {
      }
  */
 public let noopUnsubscription: (() -> Void)? = nil
-
-// MARK: Type erasing
-
-/** An ValueObserver receives data from an IndefiniteObservable. */
-public final class ValueObserver<T> {
-  public typealias Value = T
-
-  public init(_ next: @escaping (T) -> Void) {
-    self.next = next
-  }
-
-  public let next: (T) -> Void
-}
 
 // MARK: Private
 

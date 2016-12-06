@@ -20,7 +20,7 @@ import IndefiniteObservable
 
 class MemoryLeakTests: XCTestCase {
   func testObservableIsDeallocated() {
-    var observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
+    var observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
       observer.next(5)
       return noopUnsubscription
     }
@@ -37,7 +37,7 @@ class MemoryLeakTests: XCTestCase {
   }
 
   func testDownstreamObservableKeepsUpstreamAlive() {
-    var observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
+    var observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
       observer.next(5)
       return noopUnsubscription
     }
@@ -56,7 +56,7 @@ class MemoryLeakTests: XCTestCase {
   }
 
   func testSubscribedObservableIsDeallocated() {
-    var observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
+    var observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
       observer.next(5)
       return noopUnsubscription
     }
@@ -76,7 +76,7 @@ class MemoryLeakTests: XCTestCase {
   }
 
   func testSubscribedObservableWithOperatorIsDeallocated() {
-    var observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
+    var observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
       observer.next(5)
       return noopUnsubscription
     }
@@ -98,9 +98,9 @@ class MemoryLeakTests: XCTestCase {
   }
 
   func testUnsubscribedObservableWithOperatorIsDeallocated() {
-    weak var weakObservable: IndefiniteObservable<CGFloat>?
+    weak var weakObservable: ValueObservable<CGFloat>?
     autoreleasepool {
-      let observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
+      let observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
         observer.next(5)
         return noopUnsubscription
       }
@@ -121,12 +121,12 @@ class MemoryLeakTests: XCTestCase {
   }
 
   func testSubscriptionDoesNotKeepObservableInMemory() {
-    weak var weakObservable: IndefiniteObservable<Int>?
+    weak var weakObservable: ValueObservable<Int>?
     var subscription: Subscription?
 
     autoreleasepool {
       let value = 10
-      let observable = IndefiniteObservable<Int> { observer in
+      let observable = ValueObservable<Int> { observer in
         observer.next(value)
         return noopUnsubscription
       }
