@@ -120,7 +120,7 @@ class MemoryLeakTests: XCTestCase {
     XCTAssertNil(weakObservable)
   }
 
-  func testSubscriptionKeepsObservableInMemory() {
+  func testSubscriptionDoesNotKeepObservableInMemory() {
     weak var weakObservable: IndefiniteObservable<Int>?
     var subscription: Subscription?
 
@@ -135,12 +135,8 @@ class MemoryLeakTests: XCTestCase {
       subscription = observable.subscribe { _ in }
     }
 
-    XCTAssertNotNil(weakObservable)
+    XCTAssertNil(weakObservable)
 
     subscription?.unsubscribe()
-
-    // If this fails it means there's a retain cycle. Place a breakpoint here and use the Debug
-    // Memory Graph tool to debug.
-    XCTAssertNil(weakObservable)
   }
 }

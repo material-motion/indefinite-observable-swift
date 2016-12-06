@@ -67,14 +67,10 @@ public final class IndefiniteObservable<T> {
    */
   public func subscribe(next: @escaping (T) -> Void) -> Subscription {
     let observer = ValueObserver<T>(next)
-
-    // This line creates our "downstream" data flow.
-    let subscription = subscriber(ValueObserver { observer.next($0) })
-
-    // We store a strong reference to self in the subscription in order to keep the stream alive.
-    // When the subscription goes away, so does the stream.
-    return UpstreamSubscription(observable: self) {
-      subscription?()
+    if let subscription = subscriber(observer) {
+      return SimpleSubscription(subscription)
+    } else {
+      return SimpleSubscription()
     }
   }
 
@@ -119,18 +115,23 @@ public final class ValueObserver<T> {
 // Internal class for ensuring that an active subscription keeps its stream alive.
 // Streams don't hold strong references down the chain, so our subscriptions hold strong references
 // "up" the chain to the IndefiniteObservable type.
-private final class UpstreamSubscription: Subscription {
-  init(observable: Any, _ unsubscribe: @escaping () -> Void) {
-    _observable = observable
+private final class SimpleSubscription: Subscription {
+  deinit {
+    unsubscribe()
+  }
+
+  init(_ unsubscribe: @escaping () -> Void) {
     _unsubscribe = unsubscribe
+  }
+
+  init() {
+    _unsubscribe = nil
   }
 
   func unsubscribe() {
     _unsubscribe?()
     _unsubscribe = nil
-    _observable = nil
   }
 
   private var _unsubscribe: (() -> Void)?
-  private var _observable: Any?
 }
