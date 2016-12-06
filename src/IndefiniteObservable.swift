@@ -25,7 +25,7 @@
 
      let observable = IndefiniteObservable<Int> { observer in
        observer.next(5)
-       return noUnsubscription
+       return noopUnsubscription
      }
 
      let subscription = observable.subscribe { value in
@@ -96,10 +96,10 @@ public protocol Subscription {
      let observable = IndefiniteObservable<Int> { observer in
        observer.next(5)
 
-       return noUnsubscription
+       return noopUnsubscription
      }
  */
-public let noUnsubscription: (() -> Void)? = nil
+public let noopUnsubscription: (() -> Void)? = nil
 
 // MARK: Type erasing
 

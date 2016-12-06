@@ -22,7 +22,7 @@ class MemoryLeakTests: XCTestCase {
   func testObservableIsDeallocated() {
     var observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
       observer.next(5)
-      return noUnsubscription
+      return noopUnsubscription
     }
     weak var weakObservable = observable
 
@@ -39,7 +39,7 @@ class MemoryLeakTests: XCTestCase {
   func testDownstreamObservableKeepsUpstreamAlive() {
     var observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
       observer.next(5)
-      return noUnsubscription
+      return noopUnsubscription
     }
     weak var weakObservable = observable
 
@@ -58,7 +58,7 @@ class MemoryLeakTests: XCTestCase {
   func testSubscribedObservableIsDeallocated() {
     var observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
       observer.next(5)
-      return noUnsubscription
+      return noopUnsubscription
     }
     weak var weakObservable = observable
 
@@ -78,7 +78,7 @@ class MemoryLeakTests: XCTestCase {
   func testSubscribedObservableWithOperatorIsDeallocated() {
     var observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
       observer.next(5)
-      return noUnsubscription
+      return noopUnsubscription
     }
     weak var weakObservable = observable
 
@@ -102,7 +102,7 @@ class MemoryLeakTests: XCTestCase {
     autoreleasepool {
       let observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
         observer.next(5)
-        return noUnsubscription
+        return noopUnsubscription
       }
       weakObservable = observable
 
@@ -128,7 +128,7 @@ class MemoryLeakTests: XCTestCase {
       let value = 10
       let observable = IndefiniteObservable<Int> { observer in
         observer.next(value)
-        return noUnsubscription
+        return noopUnsubscription
       }
       weakObservable = observable
 

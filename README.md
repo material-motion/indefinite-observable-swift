@@ -65,7 +65,7 @@ commands:
 ```swift
 let observable = IndefiniteObservable<<#ValueType#>> { observer in
   observer.next(<#value#>)
-  return noUnsubscription
+  return noopUnsubscription
 }
 ```
 

@@ -25,7 +25,7 @@ class ObservableTests: XCTestCase {
 
     let observable = IndefiniteObservable<Int> { observer in
       observer.next(value)
-      return noUnsubscription
+      return noopUnsubscription
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -43,7 +43,7 @@ class ObservableTests: XCTestCase {
 
     let observable = IndefiniteObservable<Int> { observer in
       observer.next(value)
-      return noUnsubscription
+      return noopUnsubscription
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -68,7 +68,7 @@ class ObservableTests: XCTestCase {
 
     let observable = IndefiniteObservable<Int> { observer in
       observer.next(value)
-      return noUnsubscription
+      return noopUnsubscription
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -95,7 +95,7 @@ class ObservableTests: XCTestCase {
     let value = 10
     let observable = IndefiniteObservable<Int> { observer in
       observer.next(value)
-      return noUnsubscription
+      return noopUnsubscription
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -112,7 +112,7 @@ class ObservableTests: XCTestCase {
     let value = CGPoint(x: 0, y: 10)
     let observable = IndefiniteObservable<CGPoint> { observer in
       observer.next(value)
-      return noUnsubscription
+      return noopUnsubscription
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -130,7 +130,7 @@ class ObservableTests: XCTestCase {
     let observable = IndefiniteObservable<(Bool, CGPoint)> { observer in
       observer.next((false, value))
       observer.next((true, value))
-      return noUnsubscription
+      return noopUnsubscription
     }
 
     var filteredValues: [CGPoint] = []
