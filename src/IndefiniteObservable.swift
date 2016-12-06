@@ -107,15 +107,11 @@ public let noopUnsubscription: (() -> Void)? = nil
 public final class ValueObserver<T> {
   public typealias Value = T
 
-  init(_ next: @escaping (Value) -> Void) {
-    _next = next
+  public init(_ next: @escaping (T) -> Void) {
+    self.next = next
   }
 
-  public func next(_ value: Value) {
-    _next(value)
-  }
-
-  private let _next: (Value) -> Void
+  public let next: (T) -> Void
 }
 
 // MARK: Private
