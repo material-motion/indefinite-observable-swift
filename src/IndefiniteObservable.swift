@@ -46,7 +46,7 @@
        }
      }
  */
-open class IndefiniteObservable<O> {
+open class IndefiniteObservable<O: Observer> {
   public typealias Subscriber<O> = (O) -> (() -> Void)?
 
   /** A subscriber is only invoked when subscribe is invoked. */
@@ -74,6 +74,12 @@ open class IndefiniteObservable<O> {
   }
 
   private let subscriber: Subscriber<O>
+}
+
+/** An Observer is provided to an Observable's subscribe method. */
+public protocol Observer {
+  associatedtype Value
+  var next: (Value) -> Void { get }
 }
 
 /** A Subscription is returned by IndefiniteObservable.subscribe. */

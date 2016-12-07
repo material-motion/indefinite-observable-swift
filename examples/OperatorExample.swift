@@ -20,7 +20,7 @@ import IndefiniteObservable
 // This example demonstrates how to create a custom observable/observer type and to add operators to
 // it.
 
-public final class ValueObserver<T> {
+public final class ValueObserver<T>: Observer {
   public typealias Value = T
 
   public init(_ next: @escaping (T) -> Void) {
@@ -64,7 +64,7 @@ public enum MotionState {
   case active
 }
 
-public final class MotionObserver<T> {
+public final class MotionObserver<T>: Observer {
   public typealias Value = T
 
   public init(next: @escaping (T) -> Void, state: @escaping (MotionState) -> Void) {

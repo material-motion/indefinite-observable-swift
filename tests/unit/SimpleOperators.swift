@@ -19,7 +19,7 @@ import IndefiniteObservable
 
 // Simple operators used by the tests.
 
-public final class ValueObserver<T> {
+public final class ValueObserver<T>: Observer {
   public typealias Value = T
 
   public init(_ next: @escaping (T) -> Void) {
