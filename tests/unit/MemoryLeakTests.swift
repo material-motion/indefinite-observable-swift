@@ -20,9 +20,9 @@ import IndefiniteObservable
 
 class MemoryLeakTests: XCTestCase {
   func testObservableIsDeallocated() {
-    var observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
+    var observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
       observer.next(5)
-      return noUnsubscription
+      return noopUnsubscription
     }
     weak var weakObservable = observable
 
@@ -37,9 +37,9 @@ class MemoryLeakTests: XCTestCase {
   }
 
   func testDownstreamObservableKeepsUpstreamAlive() {
-    var observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
+    var observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
       observer.next(5)
-      return noUnsubscription
+      return noopUnsubscription
     }
     weak var weakObservable = observable
 
@@ -56,16 +56,16 @@ class MemoryLeakTests: XCTestCase {
   }
 
   func testSubscribedObservableIsDeallocated() {
-    var observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
+    var observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
       observer.next(5)
-      return noUnsubscription
+      return noopUnsubscription
     }
     weak var weakObservable = observable
 
     autoreleasepool {
-      let _ = observable!.subscribe(next: {
+      let _ = observable!.subscribe {
         let _ = $0
-      })
+      }
       // Remove our only strong reference.
       observable = nil
     }
@@ -76,18 +76,18 @@ class MemoryLeakTests: XCTestCase {
   }
 
   func testSubscribedObservableWithOperatorIsDeallocated() {
-    var observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
+    var observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
       observer.next(5)
-      return noUnsubscription
+      return noopUnsubscription
     }
     weak var weakObservable = observable
 
     autoreleasepool {
       let _ = observable!.map { value in
         return value * value
-        }.subscribe(next: {
+        }.subscribe {
           let _ = $0
-        })
+        }
       // Remove our only strong reference.
       observable = nil
     }
@@ -98,19 +98,19 @@ class MemoryLeakTests: XCTestCase {
   }
 
   func testUnsubscribedObservableWithOperatorIsDeallocated() {
-    weak var weakObservable: IndefiniteObservable<CGFloat>?
+    weak var weakObservable: ValueObservable<CGFloat>?
     autoreleasepool {
-      let observable: IndefiniteObservable<CGFloat>? = IndefiniteObservable<CGFloat> { observer in
+      let observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
         observer.next(5)
-        return noUnsubscription
+        return noopUnsubscription
       }
       weakObservable = observable
 
       let subscription = observable!.map { value in
         return value * value
-        }.subscribe(next: {
+        }.subscribe {
           let _ = $0
-        })
+        }
       // Remove our only strong reference.
       subscription.unsubscribe()
     }
@@ -120,27 +120,23 @@ class MemoryLeakTests: XCTestCase {
     XCTAssertNil(weakObservable)
   }
 
-  func testSubscriptionKeepsObservableInMemory() {
-    weak var weakObservable: IndefiniteObservable<Int>?
+  func testSubscriptionDoesNotKeepObservableInMemory() {
+    weak var weakObservable: ValueObservable<Int>?
     var subscription: Subscription?
 
     autoreleasepool {
       let value = 10
-      let observable = IndefiniteObservable<Int> { observer in
+      let observable = ValueObservable<Int> { observer in
         observer.next(value)
-        return noUnsubscription
+        return noopUnsubscription
       }
       weakObservable = observable
 
       subscription = observable.subscribe { _ in }
     }
 
-    XCTAssertNotNil(weakObservable)
+    XCTAssertNil(weakObservable)
 
     subscription?.unsubscribe()
-
-    // If this fails it means there's a retain cycle. Place a breakpoint here and use the Debug
-    // Memory Graph tool to debug.
-    XCTAssertNil(weakObservable)
   }
 }

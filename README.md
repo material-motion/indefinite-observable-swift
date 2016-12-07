@@ -54,18 +54,42 @@ commands:
 
 # Guides
 
+1. [How to make an observable](#how-to-make-an-observable)
 1. [How to create a synchronous stream](#how-to-create-a-synchronous-stream)
-2. [How to create an asynchronous stream using blocks](#how-to-create-an-asynchronous-stream-using-blocks)
-3. [How to subscribe to a stream](#how-to-subscribe-to-a-stream)
-4. [How to unsubscribe from a stream](#how-to-unsubscribe-from-a-stream)
-5. [How to create an synchronous stream using objects](#how-to-create-an-synchronous-stream-using-objects)
+1. [How to create an asynchronous stream using blocks](#how-to-create-an-asynchronous-stream-using-blocks)
+1. [How to subscribe to a stream](#how-to-subscribe-to-a-stream)
+1. [How to unsubscribe from a stream](#how-to-unsubscribe-from-a-stream)
+1. [How to create an synchronous stream using objects](#how-to-create-an-synchronous-stream-using-objects)
+
+## How to make an observable
+
+In this example we'll make the simplest possible observable type: a value observable. We will use
+this concrete type in all of the following guides.
+
+```swift
+final class ValueObserver<T>: Observer {
+  typealias Value = T
+
+  init(_ next: @escaping (T) -> Void) {
+    self.next = next
+  }
+
+  let next: (T) -> Void
+}
+
+final class ValueObservable<T>: IndefiniteObservable<ValueObserver<T>> {
+  func subscribe(_ next: @escaping (T) -> Void) -> Subscription {
+    return super.subscribe(observer: ValueObserver(next))
+  }
+}
+```
 
 ## How to create a synchronous stream
 
 ```swift
-let observable = IndefiniteObservable<<#ValueType#>> { observer in
+let observable = ValueObservable<<#ValueType#>> { observer in
   observer.next(<#value#>)
-  return noUnsubscription
+  return noopUnsubscription
 }
 ```
 
@@ -75,7 +99,7 @@ If you have an API that provides a block-based mechanism for registering observe
 create an asynchronous stream in place like so:
 
 ```swift
-let observable = IndefiniteObservable<<#ValueType#>> { observer in
+let observable = ValueObservable<<#ValueType#>> { observer in
   let someToken = registerSomeCallback { callbackValue in
     observer.next(callbackValue)
   }
@@ -117,7 +141,7 @@ need to create a `Producer` class. A `Producer` listens for events with an event
 class DragProducer: Subscription {
   typealias Value = (state: UIGestureRecognizerState, location: CGPoint)
 
-  init(subscribedTo gesture: UIPanGestureRecognizer, observer: AnyObserver<Value>) {
+  init(subscribedTo gesture: UIPanGestureRecognizer, observer: ValueObserver<Value>) {
     self.gesture = gesture
     self.observer = observer
 
@@ -141,14 +165,14 @@ class DragProducer: Subscription {
   }
 
   var gesture: (UIPanGestureRecognizer)?
-  let observer: AnyObserver<Value>
+  let observer: ValueObserver<Value>
 }
 
 let pan = UIPanGestureRecognizer()
 view.addGestureRecognizer(pan)
 
-let dragStream = IndefiniteObservable<DragProducer.Value> { observer in
-  return DragProducer(subscribedTo: pan, observer: observer).subscription
+let dragStream = ValueObservable<DragProducer.Value> { observer in
+  return DragProducer(subscribedTo: pan, observer: observer).unsubscribe
 }
 let subscription = dragStream.subscribe {
   dump($0.state)
@@ -175,22 +199,22 @@ class DragProducer: Subscription {
 
 ### Step 3: Implement the initializer
 
-Your initializer must accept and store an `AnyObserver<Value>` instance.
+Your initializer must accept and store an `ValueObserver<Value>` instance.
 
 ```swift
-  init(subscribedTo gesture: UIPanGestureRecognizer, observer: AnyObserver<Value>) {
+  init(subscribedTo gesture: UIPanGestureRecognizer, observer: ValueObserver<Value>) {
     self.gesture = gesture
     self.observer = observer
   }
 
   var gesture: (UIPanGestureRecognizer)?
-  let observer: AnyObserver<Value>
+  let observer: ValueObserver<Value>
 ```
 
 ### Step 4: Connect to the event source and send values to the observer
 
 ```swift
-  init(subscribedTo gesture: UIPanGestureRecognizer, observer: AnyObserver<Value>) {
+  init(subscribedTo gesture: UIPanGestureRecognizer, observer: ValueObserver<Value>) {
     ...
 
     gesture.addTarget(self, action: #selector(didPan))
@@ -221,7 +245,7 @@ You are responsible for disconnecting from and releasing any resources here.
 It often is helpful to provide the observer with the current state on registration.
 
 ```swift
-  init(subscribedTo gesture: UIPanGestureRecognizer, observer: AnyObserver<Value>) {
+  init(subscribedTo gesture: UIPanGestureRecognizer, observer: ValueObserver<Value>) {
     ...
 
     // Populate the observer with the current gesture state.
@@ -232,8 +256,8 @@ It often is helpful to provide the observer with the current state on registrati
 ### Step 7: Observe the producer
 
 ```swift
-let dragStream = IndefiniteObservable<DragProducer.Value> { observer in
-  return DragProducer(subscribedTo: pan, observer: observer).subscription
+let dragStream = ValueObservable<DragProducer.Value> { observer in
+  return DragProducer(subscribedTo: pan, observer: observer).unsubscribe
 }
 let subscription = dragStream.subscribe {
   dump($0)

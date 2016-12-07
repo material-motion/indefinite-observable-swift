@@ -24,7 +24,7 @@ import IndefiniteObservable
 class DragProducer: Subscription {
   typealias Value = (state: UIGestureRecognizerState, location: CGPoint)
 
-  init(subscribedTo gesture: UIPanGestureRecognizer, observer: AnyObserver<Value>) {
+  init(subscribedTo gesture: UIPanGestureRecognizer, observer: ValueObserver<Value>) {
     self.gesture = gesture
     self.observer = observer
 
@@ -48,7 +48,7 @@ class DragProducer: Subscription {
   }
 
   var gesture: (UIPanGestureRecognizer)?
-  let observer: AnyObserver<Value>
+  let observer: ValueObserver<Value>
 }
 
 public class DelegateObservableExampleViewController: UIViewController {
@@ -67,20 +67,20 @@ public class DelegateObservableExampleViewController: UIViewController {
     let pan = UIPanGestureRecognizer()
     view.addGestureRecognizer(pan)
 
-    let dragStream = IndefiniteObservable<DragProducer.Value> { observer in
+    let dragStream = IndefiniteObservable { observer in
       return DragProducer(subscribedTo: pan, observer: observer).unsubscribe
     }
 
     // Must hold a reference to the subscription, otherwise the stream will be deallocated when the
     // subscription goes out of scope.
-    subscriptions.append(dragStream.subscribe {
+    subscriptions.append(dragStream.subscribe(observer: ValueObserver {
       if $0.state == .began || $0.state == .changed {
         targetView.layer.position = $0.location
       }
-    })
+    }))
 
-    subscriptions.append(dragStream.subscribe {
+    subscriptions.append(dragStream.subscribe(observer: ValueObserver {
       print($0.state.rawValue)
-    })
+    }))
   }
 }

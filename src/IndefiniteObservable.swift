@@ -25,7 +25,7 @@
 
      let observable = IndefiniteObservable<Int> { observer in
        observer.next(5)
-       return noUnsubscription
+       return noopUnsubscription
      }
 
      let subscription = observable.subscribe { value in
@@ -46,11 +46,11 @@
        }
      }
  */
-open class IndefiniteObservable<T> {
-  public typealias Subscriber<T> = (AnyObserver<T>) -> (() -> Void)?
+open class IndefiniteObservable<O: Observer> {
+  public typealias Subscriber<O> = (O) -> (() -> Void)?
 
   /** A subscriber is only invoked when subscribe is invoked. */
-  public init(_ subscriber: @escaping Subscriber<T>) {
+  public init(_ subscriber: @escaping Subscriber<O>) {
     self.subscriber = subscriber
   }
 
@@ -65,26 +65,21 @@ open class IndefiniteObservable<T> {
    - Parameter next: A block that will be executed when new values are sent from upstream.
    - Returns: A subscription.
    */
-  public func subscribe(next: @escaping (T) -> Void) -> Subscription {
-    let observer = AnyObserver<T>(next)
-
-    // This line creates our "downstream" data flow.
-    let subscription = subscriber(AnyObserver { observer.next($0) })
-
-    // We store a strong reference to self in the subscription in order to keep the stream alive.
-    // When the subscription goes away, so does the stream.
-    return UpstreamSubscription(observable: self) {
-      subscription?()
+  public final func subscribe(observer: O) -> Subscription {
+    if let subscription = subscriber(observer) {
+      return SimpleSubscription(subscription)
+    } else {
+      return SimpleSubscription()
     }
   }
 
-  private let subscriber: Subscriber<T>
+  private let subscriber: Subscriber<O>
 }
 
-/** An Observer receives data from an IndefiniteObservable. */
+/** An Observer is provided to an Observable's subscribe method. */
 public protocol Observer {
   associatedtype Value
-  func next(_ value: Value) -> Void
+  var next: (Value) -> Void { get }
 }
 
 /** A Subscription is returned by IndefiniteObservable.subscribe. */
@@ -102,45 +97,33 @@ public protocol Subscription {
      let observable = IndefiniteObservable<Int> { observer in
        observer.next(5)
 
-       return noUnsubscription
+       return noopUnsubscription
      }
  */
-public let noUnsubscription: (() -> Void)? = nil
-
-// MARK: Type erasing
-
-/** A type-erased observer. */
-public final class AnyObserver<T>: Observer {
-  public typealias Value = T
-
-  init(_ next: @escaping (Value) -> Void) {
-    _next = next
-  }
-
-  public func next(_ value: Value) {
-    _next(value)
-  }
-
-  private let _next: (Value) -> Void
-}
+public let noopUnsubscription: (() -> Void)? = nil
 
 // MARK: Private
 
 // Internal class for ensuring that an active subscription keeps its stream alive.
 // Streams don't hold strong references down the chain, so our subscriptions hold strong references
 // "up" the chain to the IndefiniteObservable type.
-private final class UpstreamSubscription: Subscription {
-  init(observable: Any, _ unsubscribe: @escaping () -> Void) {
-    _observable = observable
+private final class SimpleSubscription: Subscription {
+  deinit {
+    unsubscribe()
+  }
+
+  init(_ unsubscribe: @escaping () -> Void) {
     _unsubscribe = unsubscribe
+  }
+
+  init() {
+    _unsubscribe = nil
   }
 
   func unsubscribe() {
     _unsubscribe?()
     _unsubscribe = nil
-    _observable = nil
   }
 
   private var _unsubscribe: (() -> Void)?
-  private var _observable: Any?
 }

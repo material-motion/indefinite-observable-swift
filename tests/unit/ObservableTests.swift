@@ -23,9 +23,9 @@ class ObservableTests: XCTestCase {
   func testSubscription() {
     let value = 10
 
-    let observable = IndefiniteObservable<Int> { observer in
+    let observable = ValueObservable<Int> { observer in
       observer.next(value)
-      return noUnsubscription
+      return noopUnsubscription
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -38,12 +38,43 @@ class ObservableTests: XCTestCase {
     waitForExpectations(timeout: 0)
   }
 
+  func testUnsubscribesOnDeallocation() {
+    var didUnsubscribe = false
+
+    autoreleasepool {
+      let observable = ValueObservable<CGFloat> { observer in
+        return {
+          didUnsubscribe = true
+        }
+      }
+
+      let _ = observable.subscribe { _ in }
+    }
+
+    XCTAssertTrue(didUnsubscribe)
+  }
+
+  func testUnsubscribesOnUnsubscribe() {
+    var didUnsubscribe = false
+
+    let observable = ValueObservable<CGFloat> { observer in
+      return {
+        didUnsubscribe = true
+      }
+    }
+
+    let subscription = observable.subscribe { _ in }
+    subscription.unsubscribe()
+
+    XCTAssertTrue(didUnsubscribe)
+  }
+
   func testTwoSubsequentSubscriptions() {
     let value = 10
 
-    let observable = IndefiniteObservable<Int> { observer in
+    let observable = ValueObservable<Int> { observer in
       observer.next(value)
-      return noUnsubscription
+      return noopUnsubscription
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -66,9 +97,9 @@ class ObservableTests: XCTestCase {
   func testTwoParalellSubscriptions() {
     let value = 10
 
-    let observable = IndefiniteObservable<Int> { observer in
+    let observable = ValueObservable<Int> { observer in
       observer.next(value)
-      return noUnsubscription
+      return noopUnsubscription
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -93,9 +124,9 @@ class ObservableTests: XCTestCase {
 
   func testMappingValues() {
     let value = 10
-    let observable = IndefiniteObservable<Int> { observer in
+    let observable = ValueObservable<Int> { observer in
       observer.next(value)
-      return noUnsubscription
+      return noopUnsubscription
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -110,9 +141,9 @@ class ObservableTests: XCTestCase {
 
   func testMappingTypes() {
     let value = CGPoint(x: 0, y: 10)
-    let observable = IndefiniteObservable<CGPoint> { observer in
+    let observable = ValueObservable<CGPoint> { observer in
       observer.next(value)
-      return noUnsubscription
+      return noopUnsubscription
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -127,10 +158,10 @@ class ObservableTests: XCTestCase {
 
   func testFilteringValues() {
     let value = CGPoint(x: 0, y: 10)
-    let observable = IndefiniteObservable<(Bool, CGPoint)> { observer in
-      observer.next((false, value))
-      observer.next((true, value))
-      return noUnsubscription
+    let observable = ValueObservable<(Bool, CGPoint)> { observer in
+      observer.next(false, value)
+      observer.next(true, value)
+      return noopUnsubscription
     }
 
     var filteredValues: [CGPoint] = []
@@ -142,11 +173,11 @@ class ObservableTests: XCTestCase {
   }
 
   class DeferredGenerator {
-    func addObserver(_ observer: AnyObserver<Int>) {
+    func addObserver(_ observer: ValueObserver<Int>) {
       observers.append(observer)
     }
 
-    func removeObserver(_ observer: AnyObserver<Int>) {
+    func removeObserver(_ observer: ValueObserver<Int>) {
       if let index = observers.index(where: { $0 === observer }) {
         observers.remove(at: index)
       }
@@ -157,13 +188,13 @@ class ObservableTests: XCTestCase {
         observer.next(value)
       }
     }
-    var observers: [AnyObserver<Int>] = []
+    var observers: [ValueObserver<Int>] = []
   }
 
   func testGeneratedValuesAreReceived() {
     let generator = DeferredGenerator()
 
-    let observable = IndefiniteObservable<Int> { observer in
+    let observable = ValueObservable<Int> { observer in
       generator.addObserver(observer)
       return {
         generator.removeObserver(observer)
@@ -192,7 +223,7 @@ class ObservableTests: XCTestCase {
   func testGeneratedValuesAreNotReceivedAfterUnsubscription() {
     let generator = DeferredGenerator()
 
-    let observable = IndefiniteObservable<Int> { observer in
+    let observable = ValueObservable<Int> { observer in
       generator.addObserver(observer)
       return {
         generator.removeObserver(observer)
@@ -219,11 +250,11 @@ class ObservableTests: XCTestCase {
   }
 
   func testGeneratedValuesAreNotReceivedAfterUnsubscriptionOrder2() {
-    weak var weakObservable: IndefiniteObservable<Int>?
+    weak var weakObservable: ValueObservable<Int>?
     autoreleasepool {
       let generator = DeferredGenerator()
 
-      let observable = IndefiniteObservable<Int> { observer in
+      let observable = ValueObservable<Int> { observer in
         generator.addObserver(observer)
         return {
           generator.removeObserver(observer)

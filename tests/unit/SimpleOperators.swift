@@ -19,22 +19,41 @@ import IndefiniteObservable
 
 // Simple operators used by the tests.
 
-extension IndefiniteObservable {
-  public func map<U>(_ transform: @escaping (T) -> U) -> IndefiniteObservable<U> {
-    return IndefiniteObservable<U> { observer in
-      return self.subscribe {
+public final class ValueObserver<T>: Observer {
+  public typealias Value = T
+
+  public init(_ next: @escaping (T) -> Void) {
+    self.next = next
+  }
+
+  public let next: (T) -> Void
+}
+
+public class ValueObservable<T>: IndefiniteObservable<ValueObserver<T>> {
+  public final func subscribe(_ next: @escaping (T) -> Void) -> Subscription {
+    return super.subscribe(observer: ValueObserver(next))
+  }
+}
+
+extension ValueObservable {
+
+  // Map from one value type to another.
+  public func map<U>(_ transform: @escaping (T) -> U) -> ValueObservable<U> {
+    return ValueObservable<U> { observer in
+      return self.subscribe(observer: ValueObserver<T> {
         observer.next(transform($0))
-      }.unsubscribe
+      }).unsubscribe
     }
   }
 
-  public func filter(_ isIncluded: @escaping (T) -> Bool) -> IndefiniteObservable<T> {
-    return IndefiniteObservable<T> { observer in
-      return self.subscribe {
-        if isIncluded($0) {
+  // Only emit values downstream for which passesTest returns true
+  public func filter(_ passesTest: @escaping (T) -> Bool) -> ValueObservable<T> {
+    return ValueObservable<T> { observer in
+      return self.subscribe(observer: ValueObserver<T> {
+        if passesTest($0) {
           observer.next($0)
         }
-      }.unsubscribe
+      }).unsubscribe
     }
   }
 }

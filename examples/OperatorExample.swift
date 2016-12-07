@@ -17,14 +17,30 @@
 import UIKit
 import IndefiniteObservable
 
-// This example demonstrates how to create custom operators that can be chained to an
-// IndefiniteObservable.
+// This example demonstrates how to create a custom observable/observer type and to add operators to
+// it.
 
-extension IndefiniteObservable {
+public final class ValueObserver<T>: Observer {
+  public typealias Value = T
+
+  public init(_ next: @escaping (T) -> Void) {
+    self.next = next
+  }
+
+  public let next: (T) -> Void
+}
+
+public class ValueObservable<T>: IndefiniteObservable<ValueObserver<T>> {
+  public final func subscribe(_ next: @escaping (T) -> Void) -> Subscription {
+    return super.subscribe(observer: ValueObserver(next))
+  }
+}
+
+extension ValueObservable {
 
   // Map from one value type to another.
-  public func map<U>(_ transform: @escaping (T) -> U) -> IndefiniteObservable<U> {
-    return IndefiniteObservable<U> { observer in
+  public func map<U>(_ transform: @escaping (T) -> U) -> ValueObservable<U> {
+    return ValueObservable<U> { observer in
       return self.subscribe {
         observer.next(transform($0))
       }.unsubscribe
@@ -32,13 +48,50 @@ extension IndefiniteObservable {
   }
 
   // Only emit values downstream for which passesTest returns true
-  public func filter(_ passesTest: @escaping (T) -> Bool) -> IndefiniteObservable<T> {
-    return IndefiniteObservable<T> { observer in
+  public func filter(_ passesTest: @escaping (T) -> Bool) -> ValueObservable<T> {
+    return ValueObservable<T> { observer in
       return self.subscribe {
         if passesTest($0) {
           observer.next($0)
         }
       }.unsubscribe
+    }
+  }
+}
+
+public enum MotionState {
+  case atRest
+  case active
+}
+
+public final class MotionObserver<T>: Observer {
+  public typealias Value = T
+
+  public init(next: @escaping (T) -> Void, state: @escaping (MotionState) -> Void) {
+    self.next = next
+    self.state = state
+  }
+
+  public let next: (T) -> Void
+  public let state: (MotionState) -> Void
+}
+
+public class MotionObservable<T>: IndefiniteObservable<MotionObserver<T>> {
+  public final func subscribe(next: @escaping (T) -> Void, state: @escaping (MotionState) -> Void) -> Subscription {
+    return super.subscribe(observer: MotionObserver(next: next, state: state))
+  }
+}
+
+extension MotionObservable {
+
+  // Map from one value type to another.
+  public func map<U>(_ transform: @escaping (T) -> U) -> MotionObservable<U> {
+    return MotionObservable<U> { observer in
+      return self.subscribe(next: {
+        observer.next(transform($0))
+      }, state: { state in
+        observer.state(state)
+      }).unsubscribe
     }
   }
 }
@@ -59,11 +112,17 @@ public class OperatorExampleViewController: UIViewController {
     let pan = UIPanGestureRecognizer()
     view.addGestureRecognizer(pan)
 
-    let dragStream = IndefiniteObservable<DragProducer.Value> { observer in
+    let dragStream = ValueObservable<DragProducer.Value> { observer in
       return DragProducer(subscribedTo: pan, observer: observer).unsubscribe
     }
 
-    // Note that we avoid keep a strong reference to self in the stream's operators.
+    let motionStream = MotionObservable<Int> { observer in
+      observer.next(5)
+      observer.state(.atRest)
+      return noopUnsubscription
+    }
+
+    // Note that we avoid keeping a strong reference to self in the stream's operators.
     // A strong reference would create a retain cycle:
     //
     // subscription -> stream -> operator -> self -> subscriptions
@@ -75,9 +134,9 @@ public class OperatorExampleViewController: UIViewController {
       .filter { $0.state == .began || $0.state == .changed }
       .map { $0.location }
       .map { .init(x: midX, y: $0.y) }
-      .subscribe {
+      .subscribe(observer: ValueObserver {
         targetView.layer.position = $0
-      }
+      })
     )
   }
 }
