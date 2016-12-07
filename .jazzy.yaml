@@ -1,5 +1,5 @@
 module: IndefiniteObservable
-module_version: 1.0.0
+module_version: 2.0.0
 sdk: iphonesimulator
 xcodebuild_arguments:
   - -workspace
@@ -7,4 +7,4 @@ xcodebuild_arguments:
   - -scheme
   - IndefiniteObservable
 github_url: https://github.com/material-motion/indefinite-observable-swift
-github_file_prefix: https://github.com/material-motion/indefinite-observable-swift/tree/v1.0.0
+github_file_prefix: https://github.com/material-motion/indefinite-observable-swift/tree/v2.0.0
