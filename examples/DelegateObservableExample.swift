@@ -21,7 +21,7 @@ import IndefiniteObservable
 // UIPanGestureRecognizer in this example, but the Producer pattern can be used for any delegated
 // type.
 
-class DragProducer: Subscription {
+class DragSource {
   typealias Value = (state: UIGestureRecognizerState, location: CGPoint)
 
   init(subscribedTo gesture: UIPanGestureRecognizer, observer: ValueObserver<Value>) {
@@ -42,7 +42,7 @@ class DragProducer: Subscription {
     return (gesture.state, gesture.location(in: gesture.view!))
   }
 
-  func unsubscribe() {
+  func disconnect() {
     gesture?.removeTarget(self, action: #selector(didPan))
     gesture = nil
   }
@@ -68,7 +68,7 @@ public class DelegateObservableExampleViewController: UIViewController {
     view.addGestureRecognizer(pan)
 
     let dragStream = IndefiniteObservable { observer in
-      return DragProducer(subscribedTo: pan, observer: observer).unsubscribe
+      return DragSource(subscribedTo: pan, observer: observer).disconnect
     }
 
     // Must hold a reference to the subscription, otherwise the stream will be deallocated when the

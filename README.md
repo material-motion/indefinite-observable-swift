@@ -89,7 +89,7 @@ final class ValueObservable<T>: IndefiniteObservable<ValueObserver<T>> {
 ```swift
 let observable = ValueObservable<<#ValueType#>> { observer in
   observer.next(<#value#>)
-  return noopUnsubscription
+  return noopDisconnection
 }
 ```
 
@@ -138,7 +138,7 @@ need to create a `Producer` class. A `Producer` listens for events with an event
 ### Final result
 
 ```swift
-class DragProducer: Subscription {
+class DragConnection {
   typealias Value = (state: UIGestureRecognizerState, location: CGPoint)
 
   init(subscribedTo gesture: UIPanGestureRecognizer, observer: ValueObserver<Value>) {
@@ -159,7 +159,7 @@ class DragProducer: Subscription {
     return (gesture.state, gesture.location(in: gesture.view!))
   }
 
-  func unsubscribe() {
+  func disconnect() {
     gesture?.removeTarget(self, action: #selector(didPan))
     gesture = nil
   }
@@ -171,8 +171,8 @@ class DragProducer: Subscription {
 let pan = UIPanGestureRecognizer()
 view.addGestureRecognizer(pan)
 
-let dragStream = ValueObservable<DragProducer.Value> { observer in
-  return DragProducer(subscribedTo: pan, observer: observer).unsubscribe
+let dragStream = ValueObservable<DragConnection.Value> { observer in
+  return DragConnection(subscribedTo: pan, observer: observer).disconnect
 }
 let subscription = dragStream.subscribe {
   dump($0.state)
@@ -192,7 +192,7 @@ class <#Name#>Producer: Subscription {
 ### Step 2: Define the Value type
 
 ```swift
-class DragProducer: Subscription {
+class DragConnection: Subscription {
   typealias Value = (state: UIGestureRecognizerState, location: CGPoint)
 }
 ```
@@ -229,12 +229,12 @@ Your initializer must accept and store an `ValueObserver<Value>` instance.
   }
 ```
 
-### Step 5: Implement unsubscribe
+### Step 5: Implement disconnect
 
 You are responsible for disconnecting from and releasing any resources here.
 
 ```swift
-  func unsubscribe() {
+  func disconnect() {
     gesture?.removeTarget(self, action: #selector(didPan))
     gesture = nil
   }
@@ -256,8 +256,8 @@ It often is helpful to provide the observer with the current state on registrati
 ### Step 7: Observe the producer
 
 ```swift
-let dragStream = ValueObservable<DragProducer.Value> { observer in
-  return DragProducer(subscribedTo: pan, observer: observer).unsubscribe
+let dragStream = ValueObservable<DragConnection.Value> { observer in
+  return DragConnection(subscribedTo: pan, observer: observer).disconnect
 }
 let subscription = dragStream.subscribe {
   dump($0)
