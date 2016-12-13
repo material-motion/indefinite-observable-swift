@@ -86,7 +86,7 @@ public final class Subscription {
     unsubscribe()
   }
 
-  init(_ disconnect: @escaping () -> Void) {
+  public init(_ disconnect: @escaping () -> Void) {
     self.disconnect = disconnect
   }
 
