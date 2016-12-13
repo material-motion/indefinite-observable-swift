@@ -1,8 +1,8 @@
 PODS:
   - CatalogByConvention (2.0.0)
-  - IndefiniteObservable/examples (2.0.0):
+  - IndefiniteObservable/examples (3.0.0):
     - IndefiniteObservable/lib
-  - IndefiniteObservable/lib (2.0.0)
+  - IndefiniteObservable/lib (3.0.0)
 
 DEPENDENCIES:
   - CatalogByConvention
@@ -15,7 +15,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   CatalogByConvention: be55c2263132e4f9f59299ac8a528ee8715b3275
-  IndefiniteObservable: 66776cf0f5929a5a260bf04d340bfb0a7087d56f
+  IndefiniteObservable: 65f2dbdba39fb9c175c99c1cc927bf1dabc7bcc9
 
 PODFILE CHECKSUM: 3e4cdba95901e07a289159f0c5a8b830ecb1a5c8
 
