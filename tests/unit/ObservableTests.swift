@@ -94,7 +94,7 @@ class ObservableTests: XCTestCase {
     waitForExpectations(timeout: 0)
   }
 
-  func testTwoParalellSubscriptions() {
+  func testTwoParallelSubscriptions() {
     let value = 10
 
     let observable = ValueObservable<Int> { observer in
