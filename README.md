@@ -89,7 +89,7 @@ final class ValueObservable<T>: IndefiniteObservable<ValueObserver<T>> {
 ```swift
 let observable = ValueObservable<<#ValueType#>> { observer in
   observer.next(<#value#>)
-  return noopDisconnection
+  return noopDisconnect
 }
 ```
 

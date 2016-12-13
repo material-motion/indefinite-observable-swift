@@ -25,7 +25,7 @@
 
      let observable = IndefiniteObservable<Int> { observer in
        observer.next(5)
-       return noopDisconnection
+       return noopDisconnect
      }
 
      let subscription = observable.subscribe { value in
@@ -99,14 +99,14 @@ public final class Subscription {
 }
 
 /**
- A no-op disconnection that can be returned by connectors when there is no need for teardown.
+ A no-op disconnect block that can be returned by connectors when there is no need for teardown.
 
  Example:
 
      let observable = IndefiniteObservable<Int> { observer in
        observer.next(5)
 
-       return noopDisconnection
+       return noopDisconnect
      }
  */
-public let noopDisconnection: Disconnect = { }
+public let noopDisconnect: Disconnect = { }

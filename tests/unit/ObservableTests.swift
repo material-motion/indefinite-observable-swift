@@ -25,7 +25,7 @@ class ObservableTests: XCTestCase {
 
     let observable = ValueObservable<Int> { observer in
       observer.next(value)
-      return noopDisconnection
+      return noopDisconnect
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -74,7 +74,7 @@ class ObservableTests: XCTestCase {
 
     let observable = ValueObservable<Int> { observer in
       observer.next(value)
-      return noopDisconnection
+      return noopDisconnect
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -99,7 +99,7 @@ class ObservableTests: XCTestCase {
 
     let observable = ValueObservable<Int> { observer in
       observer.next(value)
-      return noopDisconnection
+      return noopDisconnect
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -126,7 +126,7 @@ class ObservableTests: XCTestCase {
     let value = 10
     let observable = ValueObservable<Int> { observer in
       observer.next(value)
-      return noopDisconnection
+      return noopDisconnect
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -143,7 +143,7 @@ class ObservableTests: XCTestCase {
     let value = CGPoint(x: 0, y: 10)
     let observable = ValueObservable<CGPoint> { observer in
       observer.next(value)
-      return noopDisconnection
+      return noopDisconnect
     }
 
     let wasReceived = expectation(description: "Value was received")
@@ -161,7 +161,7 @@ class ObservableTests: XCTestCase {
     let observable = ValueObservable<(Bool, CGPoint)> { observer in
       observer.next(false, value)
       observer.next(true, value)
-      return noopDisconnection
+      return noopDisconnect
     }
 
     var filteredValues: [CGPoint] = []

@@ -22,7 +22,7 @@ class MemoryLeakTests: XCTestCase {
   func testObservableIsDeallocated() {
     var observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
       observer.next(5)
-      return noopDisconnection
+      return noopDisconnect
     }
     weak var weakObservable = observable
 
@@ -39,7 +39,7 @@ class MemoryLeakTests: XCTestCase {
   func testDownstreamObservableKeepsUpstreamAlive() {
     var observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
       observer.next(5)
-      return noopDisconnection
+      return noopDisconnect
     }
     weak var weakObservable = observable
 
@@ -58,7 +58,7 @@ class MemoryLeakTests: XCTestCase {
   func testSubscribedObservableIsDeallocated() {
     var observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
       observer.next(5)
-      return noopDisconnection
+      return noopDisconnect
     }
     weak var weakObservable = observable
 
@@ -78,7 +78,7 @@ class MemoryLeakTests: XCTestCase {
   func testSubscribedObservableWithOperatorIsDeallocated() {
     var observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
       observer.next(5)
-      return noopDisconnection
+      return noopDisconnect
     }
     weak var weakObservable = observable
 
@@ -102,7 +102,7 @@ class MemoryLeakTests: XCTestCase {
     autoreleasepool {
       let observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
         observer.next(5)
-        return noopDisconnection
+        return noopDisconnect
       }
       weakObservable = observable
 
@@ -128,7 +128,7 @@ class MemoryLeakTests: XCTestCase {
       let value = 10
       let observable = ValueObservable<Int> { observer in
         observer.next(value)
-        return noopDisconnection
+        return noopDisconnect
       }
       weakObservable = observable
 

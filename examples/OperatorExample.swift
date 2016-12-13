@@ -119,7 +119,7 @@ public class OperatorExampleViewController: UIViewController {
     let motionStream = MotionObservable<Int> { observer in
       observer.next(5)
       observer.state(.atRest)
-      return noopDisconnection
+      return noopDisconnect
     }
 
     // Note that we avoid keeping a strong reference to self in the stream's operators.
