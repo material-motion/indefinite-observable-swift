@@ -112,14 +112,14 @@ public class OperatorExampleViewController: UIViewController {
     let pan = UIPanGestureRecognizer()
     view.addGestureRecognizer(pan)
 
-    let dragStream = ValueObservable<DragProducer.Value> { observer in
-      return DragProducer(subscribedTo: pan, observer: observer).unsubscribe
+    let dragStream = ValueObservable<DragSource.Value> { observer in
+      return DragSource(subscribedTo: pan, observer: observer).disconnect
     }
 
     let motionStream = MotionObservable<Int> { observer in
       observer.next(5)
       observer.state(.atRest)
-      return noopUnsubscription
+      return noopDisconnect
     }
 
     // Note that we avoid keeping a strong reference to self in the stream's operators.

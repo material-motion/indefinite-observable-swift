@@ -25,7 +25,7 @@
 
      let observable = IndefiniteObservable<Int> { observer in
        observer.next(5)
-       return noopUnsubscription
+       return noopDisconnect
      }
 
      let subscription = observable.subscribe { value in
@@ -47,11 +47,11 @@
      }
  */
 open class IndefiniteObservable<O: Observer> {
-  public typealias Subscriber<O> = (O) -> (() -> Void)?
+  public typealias Connect<O> = (O) -> Disconnect
 
-  /** A subscriber is only invoked when subscribe is invoked. */
-  public init(_ subscriber: @escaping Subscriber<O>) {
-    self.subscriber = subscriber
+  /** Connect is only invoked when subscribe is invoked. */
+  public init(_ connect: @escaping Connect<O>) {
+    self.connect = connect
   }
 
   /**
@@ -66,14 +66,10 @@ open class IndefiniteObservable<O: Observer> {
    - Returns: A subscription.
    */
   public final func subscribe(observer: O) -> Subscription {
-    if let subscription = subscriber(observer) {
-      return SimpleSubscription(subscription)
-    } else {
-      return SimpleSubscription()
-    }
+    return Subscription(connect(observer))
   }
 
-  private let subscriber: Subscriber<O>
+  private let connect: Connect<O>
 }
 
 /** An Observer is provided to an Observable's subscribe method. */
@@ -82,48 +78,35 @@ public protocol Observer {
   var next: (Value) -> Void { get }
 }
 
+public typealias Disconnect = () -> Void
+
 /** A Subscription is returned by IndefiniteObservable.subscribe. */
-public protocol Subscription {
-  func unsubscribe()
+public final class Subscription {
+  deinit {
+    unsubscribe()
+  }
+
+  init(_ disconnect: @escaping () -> Void) {
+    self.disconnect = disconnect
+  }
+
+  public func unsubscribe() {
+    disconnect?()
+    disconnect = nil
+  }
+
+  private var disconnect: (Disconnect)?
 }
 
 /**
- A no-op subscription that can be returned by subscribers when there is no need for teardown.
-
- Does nothing when unsubscribe is invoked.
+ A no-op disconnect block that can be returned by connectors when there is no need for teardown.
 
  Example:
 
      let observable = IndefiniteObservable<Int> { observer in
        observer.next(5)
 
-       return noopUnsubscription
+       return noopDisconnect
      }
  */
-public let noopUnsubscription: (() -> Void)? = nil
-
-// MARK: Private
-
-// Internal class for ensuring that an active subscription keeps its stream alive.
-// Streams don't hold strong references down the chain, so our subscriptions hold strong references
-// "up" the chain to the IndefiniteObservable type.
-private final class SimpleSubscription: Subscription {
-  deinit {
-    unsubscribe()
-  }
-
-  init(_ unsubscribe: @escaping () -> Void) {
-    _unsubscribe = unsubscribe
-  }
-
-  init() {
-    _unsubscribe = nil
-  }
-
-  func unsubscribe() {
-    _unsubscribe?()
-    _unsubscribe = nil
-  }
-
-  private var _unsubscribe: (() -> Void)?
-}
+public let noopDisconnect: Disconnect = { }
