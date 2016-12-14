@@ -1,7 +1,14 @@
-# #develop#
+# 3.1.0
 
- TODO: Enumerate changes.
+## New features
 
+- Clients can now create instances of the Subscribe type.
+
+## Source changes
+
+* [Document Subscription's unsubscribe.](https://github.com/material-motion/indefinite-observable-swift/commit/75ec811a2f4d8d949aa50e9b05de38096eafdb42) (Jeff Verkoeyen)
+* [Allow Subscriptions to be created by clients.](https://github.com/material-motion/indefinite-observable-swift/commit/eb8abdf91e572e589586721e998fb392fede252c) (Jeff Verkoeyen)
+* [Fixed typo (#8)](https://github.com/material-motion/indefinite-observable-swift/commit/01a4ce9393c02856422ae329ec843227f2bc9490) (Brenton Simpson)
 
 # 3.0.0
 
