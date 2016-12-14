@@ -86,10 +86,15 @@ public final class Subscription {
     unsubscribe()
   }
 
-  init(_ disconnect: @escaping () -> Void) {
+  public init(_ disconnect: @escaping () -> Void) {
     self.disconnect = disconnect
   }
 
+  /**
+   Unsubscribing will disconnect all observables from their sources.
+
+   Invoked automatically on deallocation.
+   */
   public func unsubscribe() {
     disconnect?()
     disconnect = nil
