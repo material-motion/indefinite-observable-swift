@@ -30,6 +30,7 @@ public final class ValueObserver<T>: Observer {
 }
 
 public class ValueObservable<T>: IndefiniteObservable<ValueObserver<T>> {
+  @discardableResult
   public final func subscribe(_ next: @escaping (T) -> Void) -> Subscription {
     return super.subscribe(observer: ValueObserver(next))
   }
