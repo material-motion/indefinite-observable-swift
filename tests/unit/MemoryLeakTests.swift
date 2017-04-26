@@ -63,7 +63,7 @@ class MemoryLeakTests: XCTestCase {
     weak var weakObservable = observable
 
     autoreleasepool {
-      let _ = observable!.subscribe {
+      observable!.subscribe {
         let _ = $0
       }
       // Remove our only strong reference.
@@ -83,7 +83,7 @@ class MemoryLeakTests: XCTestCase {
     weak var weakObservable = observable
 
     autoreleasepool {
-      let _ = observable!.map { value in
+      observable!.map { value in
         return value * value
         }.subscribe {
           let _ = $0
@@ -97,7 +97,7 @@ class MemoryLeakTests: XCTestCase {
     XCTAssertNil(weakObservable)
   }
 
-  func testUnsubscribedObservableWithOperatorIsDeallocated() {
+  func testObservableWithOperatorIsDeallocated() {
     weak var weakObservable: ValueObservable<CGFloat>?
     autoreleasepool {
       let observable: ValueObservable<CGFloat>? = ValueObservable<CGFloat> { observer in
@@ -106,13 +106,11 @@ class MemoryLeakTests: XCTestCase {
       }
       weakObservable = observable
 
-      let subscription = observable!.map { value in
+      observable!.map { value in
         return value * value
-        }.subscribe {
-          let _ = $0
-        }
-      // Remove our only strong reference.
-      subscription.unsubscribe()
+      }.subscribe {
+        let _ = $0
+      }
     }
 
     // If this fails it means there's a retain cycle. Place a breakpoint here and use the Debug
@@ -122,7 +120,6 @@ class MemoryLeakTests: XCTestCase {
 
   func testSubscriptionDoesNotKeepObservableInMemory() {
     weak var weakObservable: ValueObservable<Int>?
-    var subscription: Subscription?
 
     autoreleasepool {
       let value = 10
@@ -132,11 +129,34 @@ class MemoryLeakTests: XCTestCase {
       }
       weakObservable = observable
 
-      subscription = observable.subscribe { _ in }
+      observable.subscribe { _ in }
     }
 
     XCTAssertNil(weakObservable)
+  }
 
-    subscription?.unsubscribe()
+  func testSubscriptionDoesNotKeepObserverInMemory() {
+    weak var weakObserver: ValueObserver<Int>?
+
+    var didDisconnect = false
+    var didSetObserver = false
+
+    autoreleasepool {
+      let value = 10
+      let observable = ValueObservable<Int> { observer in
+        weakObserver = observer
+        didSetObserver = true
+        observer.next(value)
+        return {
+          didDisconnect = true
+        }
+      }
+
+      observable.subscribe { _ in }
+    }
+
+    XCTAssertNil(weakObserver)
+    XCTAssertTrue(didSetObserver)
+    XCTAssertFalse(didDisconnect)
   }
 }

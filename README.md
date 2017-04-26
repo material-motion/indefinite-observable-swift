@@ -112,20 +112,22 @@ let observable = ValueObservable<<#ValueType#>> { observer in
 
 ## How to subscribe to a stream
 
-Streams are kept in memory by their subscriptions.
-
 ```swift
-let subscription = observable.subscribe { value in
+observable.subscribe { value in
   print(value)
 }
 ```
 
 ## How to unsubscribe from a stream
 
-Unsubscribe from a stream to allow the stream to be released. The stream can be deallocated once all
-of its subscriptions have unsubscribed.
+Unsubscribing will invoke the observable's disconnect method. To unsubscribe, you must retain a
+reference to the subscription instance returned by subscribe.
 
 ```swift
+let subscription = observable.subscribe { value in
+  print(value)
+}
+
 subscription.unsubscribe()
 ```
 

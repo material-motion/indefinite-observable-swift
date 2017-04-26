@@ -29,7 +29,7 @@ class ObservableTests: XCTestCase {
     }
 
     let wasReceived = expectation(description: "Value was received")
-    let _ = observable.subscribe {
+    observable.subscribe {
       if $0 == value {
         wasReceived.fulfill()
       }
@@ -38,7 +38,7 @@ class ObservableTests: XCTestCase {
     waitForExpectations(timeout: 0)
   }
 
-  func testUnsubscribesOnDeallocation() {
+  func testDoesNotUnsubscribeOnDeallocation() {
     var didUnsubscribe = false
 
     autoreleasepool {
@@ -48,10 +48,10 @@ class ObservableTests: XCTestCase {
         }
       }
 
-      let _ = observable.subscribe { _ in }
+      observable.subscribe { _ in }
     }
 
-    XCTAssertTrue(didUnsubscribe)
+    XCTAssertFalse(didUnsubscribe)
   }
 
   func testUnsubscribesOnUnsubscribe() {
@@ -78,14 +78,14 @@ class ObservableTests: XCTestCase {
     }
 
     let wasReceived = expectation(description: "Value was received")
-    let _ = observable.subscribe {
+    observable.subscribe {
       if $0 == value {
         wasReceived.fulfill()
       }
     }
 
     let wasReceived2 = expectation(description: "Value was received")
-    let _ = observable.subscribe {
+    observable.subscribe {
       if $0 == value {
         wasReceived2.fulfill()
       }
@@ -103,23 +103,20 @@ class ObservableTests: XCTestCase {
     }
 
     let wasReceived = expectation(description: "Value was received")
-    let subscription1 = observable.subscribe {
+    observable.subscribe {
       if $0 == value {
         wasReceived.fulfill()
       }
     }
 
     let wasReceived2 = expectation(description: "Value was received")
-    let subscription2 = observable.subscribe {
+    observable.subscribe {
       if $0 == value {
         wasReceived2.fulfill()
       }
     }
 
     waitForExpectations(timeout: 0)
-
-    subscription1.unsubscribe()
-    subscription2.unsubscribe()
   }
 
   func testMappingValues() {
@@ -130,7 +127,7 @@ class ObservableTests: XCTestCase {
     }
 
     let wasReceived = expectation(description: "Value was received")
-    let _ = observable.map { $0 * $0 }.subscribe {
+    observable.map { $0 * $0 }.subscribe {
       if $0 == value * value {
         wasReceived.fulfill()
       }
@@ -147,7 +144,7 @@ class ObservableTests: XCTestCase {
     }
 
     let wasReceived = expectation(description: "Value was received")
-    let _ = observable.map { $0.y }.subscribe {
+    observable.map { $0.y }.subscribe {
       if $0 == value.y {
         wasReceived.fulfill()
       }
@@ -165,7 +162,7 @@ class ObservableTests: XCTestCase {
     }
 
     var filteredValues: [CGPoint] = []
-    let _ = observable.filter { (state, _) in state == true }.map { $0.1 }.subscribe {
+    observable.filter { (state, _) in state == true }.map { $0.1 }.subscribe {
       filteredValues.append($0)
     }
 
@@ -202,11 +199,11 @@ class ObservableTests: XCTestCase {
     }
 
     var valuesObserved: [Int] = []
-    let subscription1 = observable.subscribe {
+    observable.subscribe {
       valuesObserved.append($0)
     }
 
-    let subscription2 = observable.subscribe {
+    observable.subscribe {
       valuesObserved.append($0 * 2)
     }
 
@@ -215,9 +212,6 @@ class ObservableTests: XCTestCase {
     generator.emit(2)
 
     XCTAssertEqual(valuesObserved, [5, 10, 10, 20, 2, 4])
-
-    subscription1.unsubscribe()
-    subscription2.unsubscribe()
   }
 
   func testGeneratedValuesAreNotReceivedAfterUnsubscription() {
@@ -231,22 +225,20 @@ class ObservableTests: XCTestCase {
     }
 
     var valuesObserved: [Int] = []
-    let subscription1 = observable.subscribe {
+    observable.subscribe {
       valuesObserved.append($0)
     }
 
-    let subscription2 = observable.subscribe {
+    let subscription = observable.subscribe {
       valuesObserved.append($0 * 2)
     }
 
     generator.emit(5)
     generator.emit(10)
-    subscription2.unsubscribe()
+    subscription.unsubscribe()
     generator.emit(2)
 
     XCTAssertEqual(valuesObserved, [5, 10, 10, 20, 2])
-
-    subscription1.unsubscribe()
   }
 
   func testGeneratedValuesAreNotReceivedAfterUnsubscriptionOrder2() {
@@ -263,22 +255,20 @@ class ObservableTests: XCTestCase {
       weakObservable = observable
 
       var valuesObserved: [Int] = []
-      let subscription1 = observable.subscribe {
+      let subscription = observable.subscribe {
         valuesObserved.append($0)
       }
 
-      let subscription2 = observable.map { $0 * 2 }.subscribe {
+      observable.map { $0 * 2 }.subscribe {
         valuesObserved.append($0)
       }
 
       generator.emit(5)
       generator.emit(10)
-      subscription1.unsubscribe()
+      subscription.unsubscribe()
       generator.emit(2)
 
       XCTAssertEqual(valuesObserved, [5, 10, 10, 20, 4])
-
-      subscription2.unsubscribe()
     }
 
     // If this fails it means there's a retain cycle. Place a breakpoint here and use the Debug

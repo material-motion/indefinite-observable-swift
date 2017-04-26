@@ -57,14 +57,18 @@ open class IndefiniteObservable<O: Observer> {
   /**
    Subscribes to the IndefiniteObservable.
 
-   The returned subscription will hold a strong reference to the IndefiniteObservable chain. The
-   reference can be released by calling unsubscribe on the returned subscription. The Subscription
-   is type-erased, making it possible to keep a collection of Subscription objects for as long as
-   you need the associated streams alive.
+   The returned subscription will hold a strong reference to the disconnect chain. The reference can
+   be released by calling unsubscribe on the returned subscription. The Subscription is type-erased,
+   making it possible to keep a collection of Subscription objects for as long as you need the
+   associated streams alive.
+
+   If you do not keep the returned subscription then the disconnect calls will never be invoked for
+   this observer.
 
    - Parameter next: A block that will be executed when new values are sent from upstream.
    - Returns: A subscription.
    */
+  @discardableResult
   public final func subscribe(observer: O) -> Subscription {
     return Subscription(connect(observer))
   }
@@ -82,10 +86,6 @@ public typealias Disconnect = () -> Void
 
 /** A Subscription is returned by IndefiniteObservable.subscribe. */
 public final class Subscription {
-  deinit {
-    unsubscribe()
-  }
-
   public init(_ disconnect: @escaping () -> Void) {
     self.disconnect = disconnect
   }
