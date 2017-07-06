@@ -149,7 +149,7 @@
 				6691DF8E1DF1735F00F2CF8B /* unit */,
 			);
 			name = tests;
-			path = ../../../tests/unit;
+			path = ../../../tests/IndefiniteObservableTests;
 			sourceTree = "<group>";
 		};
 		666FAAA41D384B52000363DA /* tests */ = {

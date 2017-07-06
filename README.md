@@ -33,7 +33,25 @@ Add `IndefiniteObservable` to your `Podfile`:
 Then run the following command:
 
     pod install
+    
+### Installation with Swift Package Manager
 
+Create a `Package.swift` file.
+
+```swift
+import PackageDescription
+
+let package = Package(
+    name: "YourProject",
+    targets: [],
+    dependencies: [
+        .Package(url: "https://github.com/material-motion/indefinite-observable-swift.git”, majorVersion: 4)
+    ]
+)
+```
+
+`swift build`
+    
 ### Usage
 
 Import the framework:
