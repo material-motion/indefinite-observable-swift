@@ -42,7 +42,7 @@ Create a `Package.swift` file.
 import PackageDescription
 
 let package = Package(
-name: "YourProject",
+    name: "YourProject",
     targets: [],
     dependencies: [
         .Package(url: "https://github.com/material-motion/indefinite-observable-swift.git”, majorVersion: 4)
