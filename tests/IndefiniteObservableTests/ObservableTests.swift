@@ -156,8 +156,8 @@ class ObservableTests: XCTestCase {
   func testFilteringValues() {
     let value = CGPoint(x: 0, y: 10)
     let observable = ValueObservable<(Bool, CGPoint)> { observer in
-      observer.next(false, value)
-      observer.next(true, value)
+      observer.next((false, value))
+      observer.next((true, value))
       return noopDisconnect
     }
 
