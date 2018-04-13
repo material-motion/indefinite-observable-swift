@@ -15,7 +15,6 @@
  */
 
 import UIKit
-import IndefiniteObservable
 
 // This example demonstrates how to create a custom observable/observer type and to add operators to
 // it.
@@ -116,7 +115,7 @@ public class OperatorExampleViewController: UIViewController {
       return DragSource(subscribedTo: pan, observer: observer).disconnect
     }
 
-    let motionStream = MotionObservable<Int> { observer in
+    _ = MotionObservable<Int> { observer in
       observer.next(5)
       observer.state(.atRest)
       return noopDisconnect

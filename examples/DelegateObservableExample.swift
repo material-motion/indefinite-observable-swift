@@ -15,7 +15,6 @@
  */
 
 import UIKit
-import IndefiniteObservable
 
 // This example demonstrates how to observe state changes from a delegate. We use
 // UIPanGestureRecognizer in this example, but the Producer pattern can be used for any delegated
