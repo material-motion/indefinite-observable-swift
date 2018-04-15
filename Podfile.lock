@@ -1,5 +1,5 @@
 PODS:
-  - CatalogByConvention (2.0.0)
+  - CatalogByConvention (2.4.1)
   - IndefiniteObservable/examples (4.0.0):
     - IndefiniteObservable/lib
   - IndefiniteObservable/lib (4.0.0)
@@ -11,12 +11,12 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   IndefiniteObservable:
-    :path: "./"
+    :path: ./
 
 SPEC CHECKSUMS:
-  CatalogByConvention: be55c2263132e4f9f59299ac8a528ee8715b3275
-  IndefiniteObservable: 0e948393173ea7dc68a9f439530559aa84d96d4c
+  CatalogByConvention: 16cd56d7e75b816e4eda0d62f9c5f0c82da8baff
+  IndefiniteObservable: 6e9d65f6b0a65357b2b344b5f9809fff5925dea0
 
-PODFILE CHECKSUM: 3e4cdba95901e07a289159f0c5a8b830ecb1a5c8
+PODFILE CHECKSUM: 95d04cd530f3d5430657f444d9bab624523a823c
 
-COCOAPODS: 1.2.0
+COCOAPODS: 1.4.0
